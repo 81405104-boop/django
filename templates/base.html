@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}我的商店{% endblock %}</title>
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <style>
+    :root{
+      /* 藏青色系 */
+      --nav-1:#0f172a;   /* 深藏青 */
+      --nav-2:#1e293b;   /* 次藏青 */
+      --nav-3:#334155;   /* hover 用 */
+
+      --bg-main:#f1f5f9; /* 主背景 */
+      --card:#ffffff;
+      --border:#e5e7eb;
+
+      --text-main:#0f172a;
+      --text-muted:#64748b;
+
+      --brand:#2563eb;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+                   "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    /* ===== 導覽列（藏青穩重，不動） ===== */
+    .navbar{
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(
+        180deg,
+        var(--nav-1) 0%,
+        var(--nav-2) 100%
+      );
+      box-shadow: 0 8px 24px rgba(15,23,42,.45);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .navbar-inner{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-links{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .navbar-link,
+    .navbar-btn{
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background .15s ease;
+      white-space: nowrap;
+    }
+
+    .navbar-link:hover,
+    .navbar-btn:hover{
+      background: rgba(255,255,255,.08);
+    }
+
+    .en-text{
+      font-size: 12px;
+      color: rgba(255,255,255,.65);
+      font-weight: 500;
+      letter-spacing: .04em;
+    }
+
+    .navbar-user{
+      color: #facc15;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(0,0,0,.35);
+    }
+
+    /* ===== 內容版心 ===== */
+    .content-wrap{
+      max-width: 1200px;
+      margin: 32px auto 48px;
+      padding: 0 20px;
+    }
+
+    /* ===== 首頁 Hero（集中、有層次） ===== */
+    .page-hero{
+      background: linear-gradient(
+        135deg,
+        #1e293b 0%,
+        #334155 100%
+      );
+      border-radius: 22px;
+      padding: 48px 24px;
+      text-align: center;
+      color: #ffffff;
+      box-shadow: 0 20px 48px rgba(15,23,42,.45);
+      margin-bottom: 42px;
+    }
+
+    .page-hero h1{
+      margin: 0;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .page-hero p{
+      margin-top: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      opacity: .9;
+    }
+
+    .page-hero .en-text{
+      display: block;
+      margin-top: 6px;
+      font-size: 14px;
+      color: rgba(255,255,255,.85);
+    }
+
+    /* ===== CTA 按鈕 ===== */
+    .btn-primary{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      padding: 12px 22px;
+      border-radius: 14px;
+      background: #ffffff;
+      color: var(--nav-1);
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 12px 26px rgba(0,0,0,.35);
+      transition: background .15s ease;
+    }
+
+    .btn-primary:hover{
+      background: #e5e7eb;
+    }
+
+    /* ===== RWD ===== */
+    @media (max-width: 768px){
+      .navbar-inner{
+        flex-direction: column;
+        gap: 12px;
+      }
+      .nav-links{
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .page-hero h1{
+        font-size: 26px;
+      }
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  <!-- 導覽列 -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <nav class="nav-links">
+
+        <a href="{% url 'products:home' %}" class="navbar-link">
+          🏠 首頁
+          <span class="en-text">HOME</span>
+        </a>
+
+        <a href="{% url 'cart:cart_view' %}" class="navbar-link">
+          🛒 購物車
+          <span class="en-text">CART</span>
+        </a>
+
+        {% if user.is_authenticated %}
+          <span class="navbar-user">👤 {{ user.username }}</span>
+          <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="navbar-btn">
+              🚪 登出
+              <span class="en-text">LOGOUT</span>
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="navbar-link">
+            🔑 登入
+            <span class="en-text">LOGIN</span>
+          </a>
+
+          <a href="{% url 'accounts:register' %}" class="navbar-link">
+            📝 註冊
+            <span class="en-text">REGISTER</span>
+          </a>
+        {% endif %}
+
+      </nav>
+    </div>
+  </header>
+
+  <!-- 主內容 -->
+  <main class="content-wrap">
+
+    <!-- 預設首頁標頭 -->
+    <section class="page-hero">
+      🔥🔥🔥 全館熱賣！超值優惠中 🔥🔥🔥
+      <span class="en-text">Hot Sale All Around! Grab Your Deals Now!</span>
+
+      <div>
+        <a href="{% url 'products:home' %}" class="btn-primary">
+          🛍️ 立即購物
+          <span class="en-text" style="color:#0f172a;">Shop Now</span>
+        </a>
+      </div>
+    </section>
+
+    {% block content %}{% endblock %}
+
+  </main>
+
+</body>
+</html>
