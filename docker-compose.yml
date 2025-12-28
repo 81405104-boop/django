@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    container_name: django2_web
+    ports:
+      - "7788:8000"         # 👈 改這裡，讓它用 7788
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    working_dir: /app
+    restart: always
